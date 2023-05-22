@@ -1,3 +1,13 @@
+body {
+    background-color: aliceblue;
+}
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Ajusta la altura según tus necesidades */
+}
 #sudoku-board {
     display: grid;
     gap: 1px;
@@ -44,11 +54,14 @@ header div {
 .button {
     width: 150px;
     padding: 1rem;
-    border: 1px solid black;
+    border: 1px solid aqua;
     border-radius: 5px;
     text-decoration: none;
     color: black;
     cursor: pointer;
+    background-color: aquamarine;
+    margin: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 -2px 2px rgba(0, 0, 0, 0.2);
+    border-style: outset;
 }
-
-
