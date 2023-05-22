@@ -1,0 +1,54 @@
+#sudoku-board {
+    display: grid;
+    gap: 1px;
+    justify-content: center;
+    align-content: center;
+    margin: 1rem auto;
+}
+header {
+    background-color: aquamarine;
+}
+h1 {
+    font-size: 2rem;
+    padding: 1rem;
+}
+
+header div {
+    width: 120px;
+    margin: 0 auto;
+}
+.cell {
+    text-align: center;
+    font-size: 20px;
+    line-height: 30px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid black;
+}
+
+.cell input {
+    width: 80%;
+    height: 80%;
+    border: none;
+    text-align: center;
+    font-size: 15px;
+}
+
+.cell.initial {
+    background-color: lightgray;
+}
+.botones {
+    text-align: center;
+    margin: 3rem 0;
+}
+.button {
+    width: 150px;
+    padding: 1rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+}
+
+
