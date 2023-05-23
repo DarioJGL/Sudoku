@@ -1,59 +1,195 @@
-function getRandomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+// Nivel Fácil
+let easySudokuGrid = [
+    [0, 0, 0, 2, 6, 0, 7, 0, 1],
+    [6, 8, 0, 0, 7, 0, 0, 9, 0],
+    [1, 9, 0, 0, 0, 4, 5, 0, 0],
+    [8, 2, 0, 1, 0, 0, 0, 4, 0],
+    [0, 0, 4, 6, 0, 2, 9, 0, 0],
+    [0, 5, 0, 0, 0, 3, 0, 2, 8],
+    [0, 0, 9, 3, 0, 0, 0, 7, 4],
+    [0, 4, 0, 0, 5, 0, 0, 3, 6],
+    [7, 0, 3, 0, 1, 8, 0, 0, 0]
+];
 
-// Función para generar un Sudoku aleatorio para el tamaño dado
-function generateRandomSudoku(size) {
-    const sudokuGrid = [];
+// Nivel Medio
+let mediumSudokuGrid = [
+    [1, 0, 0, 0, 0, 7, 0, 9, 0],
+    [0, 3, 0, 0, 2, 0, 0, 0, 8],
+    [0, 0, 9, 6, 0, 0, 5, 0, 0],
+    [0, 0, 5, 3, 0, 0, 9, 0, 0],
+    [0, 1, 0, 0, 8, 0, 0, 0, 2],
+    [6, 0, 0, 0, 0, 4, 0, 0, 0],
+    [3, 0, 0, 0, 0, 0, 0, 1, 0],
+    [0, 4, 0, 0, 0, 0, 0, 0, 7],
+    [0, 0, 7, 0, 0, 0, 3, 0, 0]
+];
 
-    // Llenar el SudokuGrid con ceros
-    for (let i = 0; i < size; i++) {
-        const row = [];
-        for (let j = 0; j < size; j++) {
-            row.push(0);
-        }
-        sudokuGrid.push(row);
+// Nivel Difícil
+let hardSudokuGrid = [
+    [0, 0, 4, 0, 0, 0, 0, 5, 6],
+    [0, 5, 0, 0, 6, 2, 0, 0, 1],
+    [0, 0, 0, 0, 0, 3, 0, 0, 0],
+    [0, 0, 0, 7, 0, 0, 0, 0, 0],
+    [9, 0, 0, 0, 0, 0, 8, 1, 0],
+    [0, 4, 0, 0, 1, 5, 0, 0, 2],
+    [0, 0, 8, 0, 7, 6, 0, 0, 0],
+    [0, 0, 0, 4, 0, 0, 0, 0, 7],
+    [0, 6, 0, 3, 0, 0, 0, 0, 0]
+];
+
+let currentLevel = 0; // 0: easy, 1: medium, 2: hard
+
+
+function drawSudokuBoard() {
+    const sudokuBoard = document.getElementById("sudoku-board");
+    sudokuBoard.innerHTML = "";
+    sudokuBoard.style.gridTemplateColumns = `repeat(9, 30px)`;
+    sudokuBoard.style.gridTemplateRows = `repeat(9, 30px)`;
+    let grid;
+    switch (currentLevel) {
+        case 0:
+            grid = easySudokuGrid;
+            break;
+        case 1:
+            grid = mediumSudokuGrid;
+            break;
+        case 2:
+            grid = hardSudokuGrid;
+            break;
+        default:
+            grid = easySudokuGrid;
     }
 
-    // Generar números aleatorios para las celdas iniciales
-    for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-            if (getRandomNumber(1, 4) === 1) { // Probabilidad de 1/4 para que una celda sea inicial
-                let randomNumber;
-                do {
-                    randomNumber = getRandomNumber(1, size);
-                } while (!isValidNumber(sudokuGrid, i, j, randomNumber));
-                sudokuGrid[i][j] = randomNumber;
+    // Recorrer la matriz y agregar celdas al tablero
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            const cell = document.createElement("div");
+            cell.className = "cell border-cell";
+            if (grid[i][j] === 0) {
+                const input = document.createElement("input");
+                input.type = "number";
+                input.min = "1";
+                input.max = "9";
+                input.addEventListener("input", () => {
+                    grid[i][j] = parseInt(input.value);
+                });
+                cell.appendChild(input);
+            } else {
+                cell.textContent = grid[i][j];
+                cell.classList.add("initial");
             }
+            sudokuBoard.appendChild(cell);
         }
     }
+}
+function checkSudoku() {
+    let grid;
+    switch (currentLevel) {
+        case 0:
+            grid = easySudokuGrid;
+            break;
+        case 1:
+            grid = mediumSudokuGrid;
+            break;
+        case 2:
+            grid = hardSudokuGrid;
+            break;
+        default:
+            grid = easySudokuGrid;
+    }
 
-    return sudokuGrid;
+    const isValid = validateSudoku(grid);
+
+    const resultCard = document.createElement("div");
+    resultCard.className = "card";
+
+    const resultMessage = document.createElement("p");
+    resultMessage.className = "result-message";
+
+
+
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    overlay.appendChild(resultCard);
+
+    document.body.appendChild(overlay);
+    resultCard.appendChild(resultMessage);
+    if (isValid) {
+        resultMessage.textContent = "¡El sudoku es correcto!";
+        const nextButton = document.createElement("button");
+        nextButton.className = "next-button";
+        nextButton.textContent = "Siguiente";
+        nextButton.addEventListener("click", () => {
+            currentLevel = (currentLevel + 1) % 3;
+            drawSudokuBoard();
+            document.body.removeChild(overlay);
+        });
+        resultCard.appendChild(nextButton);
+    } else {
+        resultMessage.textContent = "El sudoku es incorrecto.";
+        const closeButton = document.createElement("button");
+        closeButton.className = "close-button";
+        closeButton.textContent = "Cerrar";
+        closeButton.addEventListener("click", () => {
+            document.body.removeChild(overlay);
+        });
+        resultCard.appendChild(closeButton);
+    }
+
+
 }
 
-// Función para verificar si un número es válido en la posición dada
-function isValidNumber(grid, row, col, num) {
-    // Verificar la fila
+
+
+function validateSudoku(grid) {
+    return validateRows(grid) && validateColumns(grid) && validateBlocks(grid);
+}
+
+function validateRows(grid) {
     for (let i = 0; i < grid.length; i++) {
-        if (grid[row][i] === num) {
+        const row = grid[i];
+        const rowSet = new Set(row);
+
+        if (rowSet.size !== row.length || rowSet.has(0)) {
             return false;
         }
     }
 
-    // Verificar la columna
-    for (let i = 0; i < grid.length; i++) {
-        if (grid[i][col] === num) {
+    return true;
+}
+
+function validateColumns(grid) {
+    for (let i = 0; i < grid[0].length; i++) {
+        const column = [];
+
+        for (let j = 0; j < grid.length; j++) {
+            column.push(grid[j][i]);
+        }
+
+        const columnSet = new Set(column);
+
+        if (columnSet.size !== column.length || columnSet.has(0)) {
             return false;
         }
     }
 
-    // Verificar el cuadro 3x3
-    const boxSize = Math.sqrt(grid.length);
-    const boxRow = Math.floor(row / boxSize) * boxSize;
-    const boxCol = Math.floor(col / boxSize) * boxSize;
-    for (let i = boxRow; i < boxRow + boxSize; i++) {
-        for (let j = boxCol; j < boxCol + boxSize; j++) {
-            if (grid[i][j] === num) {
+    return true;
+}
+
+function validateBlocks(grid) {
+    for (let blockRow = 0; blockRow < 3; blockRow++) {
+        for (let blockCol = 0; blockCol < 3; blockCol++) {
+            const block = [];
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    block.push(grid[blockRow * 3 + i][blockCol * 3 + j]);
+                }
+            }
+
+            const blockSet = new Set(block);
+
+            if (blockSet.size !== block.length || blockSet.has(0)) {
                 return false;
             }
         }
@@ -62,83 +198,7 @@ function isValidNumber(grid, row, col, num) {
     return true;
 }
 
-function drawSudokuBoard(size) {
-    const sudokuBoard = document.getElementById("sudoku-board");
+drawSudokuBoard();
 
-    // Limpiar el tablero antes de dibujar
-    sudokuBoard.innerHTML = "";
-
-    // Establecer el tamaño del tablero
-    sudokuBoard.style.gridTemplateColumns = `repeat(${size}, 30px)`;
-    sudokuBoard.style.gridTemplateRows = `repeat(${size}, 30px)`;
-
-    // Recorrer la matriz y agregar celdas al tablero
-    for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-            const cell = document.createElement("div");
-            cell.className = "cell border-cell";
-
-            // Crear un input solo para las celdas vacías (0)
-            if (sudokuGrid[i][j] === 0) {
-                const input = document.createElement("input");
-                input.type = "number";
-                input.min = "1";
-                input.max = size;
-                input.addEventListener("input", () => {
-                    sudokuGrid[i][j] = parseInt(input.value);
-                });
-                cell.appendChild(input);
-            } else {
-                // Mostrar el valor inicial en las celdas iniciales (no editables)
-                cell.textContent = sudokuGrid[i][j];
-                cell.classList.add("initial");
-            }
-
-            sudokuBoard.appendChild(cell);
-        }
-    }
-}
-
-// Función para comprobar si el Sudoku es válido
-function checkSudoku() {
-    // verifica si no hay números repetidos en filas, columnas y cuadros
-    for (let i = 0; i < sudokuGrid.length; i++) {
-        for (let j = 0; j < sudokuGrid.length; j++) {
-            const num = sudokuGrid[i][j];
-            if (num !== 0) {
-                if (!isValidNumber(sudokuGrid, i, j, num)) {
-                    alert("El Sudoku no es válido");
-                    return;
-                }
-            }
-        }
-    }
-
-    alert("El Sudoku es válido");
-}
-
-// Obtener los botones de dificultad
-const difficultyButtons = document.querySelectorAll(".difficulty-button");
-
-// Agregar evento a cada botón de dificultad
-difficultyButtons.forEach(button => {
-    button.addEventListener("click", () => {
-        const size = parseInt(button.dataset.size);
-        sudokuGrid = generateRandomSudoku(size);
-        drawSudokuBoard(size);
-    });
-});
-
-// Llamar a la función para dibujar el tablero al cargar la página
-let sudokuGrid = generateRandomSudoku(9);
-drawSudokuBoard(9);
-
-// Agregar evento al botón de comprobar
 const checkButton = document.getElementById("check-button");
 checkButton.addEventListener("click", checkSudoku);
-
-
-
-
-
-
